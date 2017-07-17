@@ -14,9 +14,16 @@
         [SerializeField]
         private List<Collider> m_currentSelection = new List<Collider>();
 
+        public List<Collider> CurrentSelection { get { return m_currentSelection; } }
+
         private bool m_dragging;
         private Vector2 m_initialScreenClick;
         private Vector2[] m_sortedExtents = new Vector2[2];
+
+        private void Reset() {
+            m_config.UseExtents = true;
+            m_config.SplitMeshVerts = false;
+        }
 
         protected override void Awake() {
             base.Awake();
@@ -24,9 +31,9 @@
         }
 
         protected override void Update() {
+
             base.Update();
-            //m_currentSelection.Clear();
-            //m_currentSelection_hash.Clear();
+
             if (!m_dragging) {
                 if (Input.GetKeyDown(KeyCode.Mouse0)) {
                     m_dragging = true;
@@ -80,8 +87,7 @@
             return pos;
 
         }
-
-
+        
         private void OnTriggerStay(Collider other) {
             m_currentStay_hash.Add(other);
 
@@ -90,7 +96,7 @@
                 m_currentSelection_hash.Add(other);
                 OnSelected(other);
             }
-           // Debug.Log(other.name);
+
         }
     }
 }

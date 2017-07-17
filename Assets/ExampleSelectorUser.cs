@@ -14,10 +14,10 @@ public class ExampleSelectorUser : MonoBehaviour {
     }
 
     void OnSelected(Collider go) {
-        Debug.Log("Selected : " + go.name);
+        
     }
 
     void OnDeselected(Collider go) {
-        Debug.Log("Deselected : " + go.name);
+        
     }
 }

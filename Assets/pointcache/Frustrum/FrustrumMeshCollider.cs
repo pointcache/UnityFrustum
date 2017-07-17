@@ -10,17 +10,18 @@
         public bool Convex;
         protected new MeshCollider collider;
 
+        private void Reset() {
+            Convex = true;
+            m_config.SplitMeshVerts = false;
+        }
+
         protected override void Awake() {
             base.Awake();
 
             collider = GetComponent<MeshCollider>();
             collider.sharedMesh = frustrum.FrustrumMesh;
-            collider.convex = true;
+            
         }
-
-       // protected override void Update() {
-       //     
-       // }
 
         protected void FixedUpdate() {
             base.Update();
