@@ -8,7 +8,7 @@
     public class FrustrumMeshCollider : FrustrumBaseComponent {
 
         public bool Convex;
-        private new MeshCollider collider;
+        protected new MeshCollider collider;
 
         protected override void Awake() {
             base.Awake();
@@ -20,10 +20,19 @@
 
         protected override void Update() {
             base.Update();
+            if (!m_config.Active) {
+                if (collider.enabled) {
+                    collider.enabled = false;
+                }
+                return;
+            }
+            else {
+                if (!collider.enabled)
+                    collider.enabled = true;
+            }
 
             collider.sharedMesh = frustrum.FrustrumMesh;
-            collider.convex = true;
+            collider.convex = Convex;
         }
     }
-
 }

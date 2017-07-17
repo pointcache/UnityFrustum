@@ -17,12 +17,33 @@
     [System.Serializable]
     public class Frustrum {
 
+        public float CurrentNearPlaneWidth { get; private set; }
+        public float CurrentNearPlaneHeight { get; private set; }
+        public float CurrentFarPlaneWidth { get; private set; }
+        public float CurrentFarPlaneHeight { get; private set; }
+
+        /// <summary>
+        /// The thinnest side of the frustrum at near plane.
+        /// </summary>
+        public float MinimalMeasure
+        {
+            get {
+                float min = float.MaxValue;
+                min = min >= CurrentNearPlaneWidth ? CurrentNearPlaneWidth : min;
+                min = min >= CurrentNearPlaneHeight ? CurrentNearPlaneHeight : min;
+                return min;
+            }
+        }
+
         private Mesh m_mesh;
 
-        private float m_Vfov;
+        private float m_minHfov;
+        private float m_minVfov;
         private float m_Hfov;
+        private float m_Vfov;
         private float m_nearPlane;
         private float m_farPlane;
+        private float m_minExtDimension;
 
         private bool m_genNearPlane = true;
         private bool m_genFarPlane = true;
@@ -30,6 +51,7 @@
 
         private List<Vector3> m_vertices = new List<Vector3>();
         private List<int> m_triangles = new List<int>();
+        private int[] m_trianglesArray;
 
         public Mesh FrustrumMesh { get { return m_mesh; } }
 
@@ -45,11 +67,22 @@
 
         public void SetParameters(float vertFov, float horFov, float nearPlaneDist, float farPlaneDist) {
 
-            m_Vfov = Mathf.Clamp(vertFov, 0f, 180f);
-            m_Hfov = Mathf.Clamp(horFov, 0f, 180f);
+            m_Hfov = Mathf.Clamp(horFov, m_minHfov, 180f);
+            m_Vfov = Mathf.Clamp(vertFov, m_minVfov, 180f);
             m_nearPlane = Mathf.Clamp(nearPlaneDist, 0f, float.MaxValue);
             m_farPlane = Mathf.Clamp(farPlaneDist, 0f, float.MaxValue);
 
+        }
+
+        /// <summary>
+        /// Use to add a limit to how slim fovs can be.
+        /// </summary>
+        /// <param name="minHorFov"></param>
+        /// <param name="minVertFov"></param>
+        public void SetMinimals(float minHorFov, float minVertFov, float minExtentsWidthOrHeight) {
+            m_minHfov = minHorFov;
+            m_minVfov = minVertFov;
+            m_minExtDimension = minExtentsWidthOrHeight;
         }
 
         /// <summary>
@@ -105,14 +138,45 @@
 
             //2. Process received extents to be usable by vertices
             float near_ex_min_X = minExtent.x * (nearHalfWidth * 2f);
-            float near_ex_min_Y = minExtent.y * (nearHalfHeight * 2f);
             float near_ex_max_X = (nearHalfWidth * 2f) - (maxExtent.x * (nearHalfWidth * 2f));
+            float near_ex_min_Y = minExtent.y * (nearHalfHeight * 2f);
             float near_ex_max_Y = (nearHalfHeight * 2f) - (maxExtent.y * (nearHalfHeight * 2f));
 
             float far_ex_min_X = minExtent.x * (farHalfWidth * 2f);
-            float far_ex_min_Y = minExtent.y * (farHalfHeight * 2f);
             float far_ex_max_X = (farHalfWidth * 2f) - (maxExtent.x * (farHalfWidth * 2f));
+            float far_ex_min_Y = minExtent.y * (farHalfHeight * 2f);
             float far_ex_max_Y = (farHalfHeight * 2f) - (maxExtent.y * (farHalfHeight * 2f));
+
+            float half_min_ex = m_minExtDimension / 2f;
+
+            //Limit minimal size of the frustrum with current extents
+            if ((1f - (minExtent.x + (1f - maxExtent.x))) < m_minExtDimension) {
+                near_ex_min_X -= half_min_ex;
+                near_ex_max_X -= half_min_ex;
+                far_ex_min_X -= half_min_ex;
+                far_ex_max_X -= half_min_ex;
+            }
+
+            if ((1f - (minExtent.y + (1f - maxExtent.y))) < m_minExtDimension) {
+                near_ex_min_Y -= half_min_ex;
+                near_ex_max_Y -= half_min_ex;
+                far_ex_min_Y -= half_min_ex;
+                far_ex_max_Y -= half_min_ex;
+            }
+
+            //Getting 0-1 percentage of the extent
+            float extentWidthReduction = (1f - maxExtent.x) + minExtent.x;
+            float extentHeightReduction = (1f - maxExtent.y) + minExtent.y;
+
+            //Actual planes dimensions with extents
+            CurrentNearPlaneWidth = (nearHalfWidth * 2f) * (1f - extentWidthReduction);
+            CurrentNearPlaneHeight = (nearHalfHeight * 2f) * (1f - extentHeightReduction);
+            CurrentFarPlaneWidth = (farHalfWidth * 2f) * (1f - extentWidthReduction);
+            CurrentFarPlaneHeight = (farHalfHeight * 2f) * (1f - extentHeightReduction);
+
+            //Actual current angles
+            float current_angle_H = (CurrentNearPlaneWidth / 2f) / m_nearPlane;
+            float current_angle_V = (CurrentNearPlaneHeight / 2f) / m_nearPlane;
 
             //3. Prepare frustrum planes defining points
 
@@ -350,11 +414,20 @@
                 }
             }
 
+            //optimization to reduce garbage
+            int count = m_triangles.Count;
+            if (m_trianglesArray == null || m_trianglesArray.Length != count) {
+                m_trianglesArray = new int[count];
+            }
+            for (int i = 0; i < count; i++) {
+                m_trianglesArray[i] = m_triangles[i];
+            }
+
             m_mesh.Clear();
             m_mesh.SetVertices(m_vertices);
-            m_mesh.SetTriangles(m_triangles.ToArray(), 0);
-            m_mesh.RecalculateBounds();
-            m_mesh.RecalculateNormals();
+            m_mesh.SetTriangles(m_trianglesArray, 0);
+            //m_mesh.RecalculateBounds();
+            //m_mesh.RecalculateNormals();
 
         }
 

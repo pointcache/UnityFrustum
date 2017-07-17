@@ -6,22 +6,31 @@
 
     public class FrustrumCameraSelector : FrustrumCamera {
 
+        public System.Action<GameObject> OnSelected = delegate { };
+        public System.Action<GameObject> OnDeselected = delegate { };
+
+        private HashSet<GameObject> m_currentSelection = new HashSet<GameObject>();
+
         private bool m_dragging;
         private Vector2 m_initialScreenClick;
         private Vector2[] m_sortedExtents = new Vector2[2];
 
-        protected override void Update() {
+        protected override void Awake() {
+            base.Awake();
+            m_config.Active = false;
+        }
 
+        protected override void Update() {
             base.Update();
 
-            if(!m_dragging) {
+            if (!m_dragging) {
                 if (Input.GetKeyDown(KeyCode.Mouse0)) {
                     m_dragging = true;
                     m_initialScreenClick = Input.mousePosition;
+                    m_config.Active = true;
                 }
             }
-            else {
-
+            if (m_dragging) {
                 SortExtents(ConvertScreenPosToExtents(m_initialScreenClick), ConvertScreenPosToExtents(Input.mousePosition));
 
                 frustrumConfig.ExtentsMin = m_sortedExtents[0];
@@ -31,6 +40,8 @@
                     m_dragging = false;
                     frustrumConfig.ExtentsMin = Vector3.zero;
                     frustrumConfig.ExtentsMax = Vector3.one;
+                    m_config.Active = false;
+
                 }
             }
         }
@@ -53,6 +64,18 @@
             pos.y = pos.y / Screen.height;
             return pos;
 
+        }
+
+        private void OnTriggerEnter(Collider other) {
+           // OnSelected(other.gameObject);
+        }
+
+        private void OnTriggerExit(Collider other) {
+           // OnSelected(other.gameObject);
+        }
+
+        private void OnTriggerStay(Collider other) {
+            Debug.Log(other.name);
         }
     }
 }

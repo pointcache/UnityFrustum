@@ -33,7 +33,13 @@
         [System.Serializable]
         public class FrustrumConfiguration {
 
+            public bool Active = true;
+
             public float VerticalFov = 45, HorizontalFov = 45, NearPlaneDistance = 1, FarPlaneDistance = 3;
+
+            public float MinimalHorizontalFov = 0.01f, MinimalVerticalFov = 0.01f;
+
+            public float MinimalExtentsDimension = 0.01f;
 
             public bool SplitMeshVerts;
 
@@ -54,9 +60,13 @@
                                 m_config.FarPlaneDistance,
                                 m_config.SplitMeshVerts);
 
+            frustrum.SetMinimals(m_config.MinimalHorizontalFov, m_config.MinimalVerticalFov, m_config.MinimalExtentsDimension);
+
         }
 
         protected virtual void Update() {
+            if (!m_config.Active)
+                return;
 
             if (RealtimeUpdate)
                 DoGenerate = true;

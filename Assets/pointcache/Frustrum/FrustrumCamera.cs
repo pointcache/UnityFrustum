@@ -28,6 +28,8 @@
             var hfov = Mathf.Rad2Deg * radHFOV;
 
             frustrumConfig.HorizontalFov = hfov;
+            frustrumConfig.NearPlaneDistance = targetCamera.nearClipPlane;
+            frustrumConfig.FarPlaneDistance = targetCamera.farClipPlane;
 
         }
 
