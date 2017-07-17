@@ -55,4 +55,12 @@ Instructions:
    * Both selector and meshcollider work in fixed update due to it being tied to physics,
    meaning the selection itself is running at the physics framerate, it may be an issue in the future.
    
+   If you get errors while clicking, with collider generation , from PhysX
+   its due to the excessive thinning of the collider, when its converted to convex.
+   To solve it you have to use these:
+    * Minimal Extents Dimensions value, make it higher
+    * Move camera near plane further
+    * Move camera far plane closer
+    
+    All in all its due to near plane being super thin, ill fix it in future releases.
 
