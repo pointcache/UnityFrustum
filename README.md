@@ -46,6 +46,7 @@ Instructions:
   4. Drag FrustrumCameraSelector into `TakeParametersFrom` field of FrustrumMeshCollider, 
   this will make it sample the mesh generator settings from it.
   5. Make both UpdateInRealtime.
+  6. Any object you wish to be able to select must have a rigidbody (kinematic will do)
   
   Now select camera, play and watch the selection mesh when you drag on the screen.
   Couple of things to note:
