@@ -6,10 +6,13 @@
 
     public class FrustrumCameraSelector : FrustrumCamera {
 
-        public System.Action<GameObject> OnSelected = delegate { };
-        public System.Action<GameObject> OnDeselected = delegate { };
+        public System.Action<Collider> OnSelected = delegate { };
+        public System.Action<Collider> OnDeselected = delegate { };
 
-        private HashSet<GameObject> m_currentSelection = new HashSet<GameObject>();
+        private HashSet<Collider> m_currentSelection_hash = new HashSet<Collider>();
+        private HashSet<Collider> m_currentStay_hash = new HashSet<Collider>();
+        [SerializeField]
+        private List<Collider> m_currentSelection = new List<Collider>();
 
         private bool m_dragging;
         private Vector2 m_initialScreenClick;
@@ -22,7 +25,8 @@
 
         protected override void Update() {
             base.Update();
-
+            //m_currentSelection.Clear();
+            //m_currentSelection_hash.Clear();
             if (!m_dragging) {
                 if (Input.GetKeyDown(KeyCode.Mouse0)) {
                     m_dragging = true;
@@ -46,6 +50,17 @@
             }
         }
 
+        private void FixedUpdate() {
+            for (int i = m_currentSelection.Count - 1; i > -1; i--) {
+                if (!m_currentStay_hash.Contains(m_currentSelection[i])) {
+                    OnDeselected(m_currentSelection[i]);
+                    m_currentSelection_hash.Remove(m_currentSelection[i]);
+                    m_currentSelection.RemoveAt(i);
+                }
+            }
+            m_currentStay_hash.Clear();
+        }
+
         private void SortExtents(Vector3 min, Vector3 max) {
 
             float minX = Mathf.Min(min.x, max.x);
@@ -66,16 +81,16 @@
 
         }
 
-        private void OnTriggerEnter(Collider other) {
-           // OnSelected(other.gameObject);
-        }
-
-        private void OnTriggerExit(Collider other) {
-           // OnSelected(other.gameObject);
-        }
 
         private void OnTriggerStay(Collider other) {
-            Debug.Log(other.name);
+            m_currentStay_hash.Add(other);
+
+            if (!m_currentSelection_hash.Contains(other)) {
+                m_currentSelection.Add(other);
+                m_currentSelection_hash.Add(other);
+                OnSelected(other);
+            }
+           // Debug.Log(other.name);
         }
     }
 }

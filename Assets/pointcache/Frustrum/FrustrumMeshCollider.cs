@@ -18,7 +18,11 @@
             collider.convex = true;
         }
 
-        protected override void Update() {
+       // protected override void Update() {
+       //     
+       // }
+
+        protected void FixedUpdate() {
             base.Update();
             if (!m_config.Active) {
                 if (collider.enabled) {

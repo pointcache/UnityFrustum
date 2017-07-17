@@ -10,14 +10,14 @@ public class ExampleSelectorUser : MonoBehaviour {
     private void Awake() {
         selector = GetComponent<FrustrumCameraSelector>();
         selector.OnSelected += OnSelected;
-        selector.OnDeselected += OnSelected;
+        selector.OnDeselected += OnDeselected;
     }
 
-    void OnSelected(GameObject go) {
+    void OnSelected(Collider go) {
         Debug.Log("Selected : " + go.name);
     }
 
-    void OnDeselected(GameObject go) {
+    void OnDeselected(Collider go) {
         Debug.Log("Deselected : " + go.name);
     }
 }
