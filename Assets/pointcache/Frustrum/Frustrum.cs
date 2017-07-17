@@ -94,6 +94,7 @@
         /// <param name="maxOffset">Extent, adds area relative to lower left corner, valid value is in the 0-1 range</param>
         private void Generate(bool splitVertices, Vector2 minExtent, Vector2 maxExtent) {
 
+            //1. First a bit of trig to find the correct witdth and height of the frustrum planes.
             float Vtan = Mathf.Tan((m_Vfov / 2f) * Mathf.Deg2Rad);
             float Htan = Mathf.Tan((m_Hfov / 2f) * Mathf.Deg2Rad);
 
@@ -102,6 +103,7 @@
             float farHalfWidth = (Htan * m_farPlane);
             float farHalfHeight = (Vtan * m_farPlane);
 
+            //2. Process received extents to be usable by vertices
             float near_ex_min_X = minExtent.x * (nearHalfWidth * 2f);
             float near_ex_min_Y = minExtent.y * (nearHalfHeight * 2f);
             float near_ex_max_X = (nearHalfWidth * 2f) - (maxExtent.x * (nearHalfWidth * 2f));
@@ -112,7 +114,8 @@
             float far_ex_max_X = (farHalfWidth * 2f) - (maxExtent.x * (farHalfWidth * 2f));
             float far_ex_max_Y = (farHalfHeight * 2f) - (maxExtent.y * (farHalfHeight * 2f));
 
-            //all points
+            //3. Prepare frustrum planes defining points
+
             //0
             Vector3 A1 = new Vector3(-nearHalfWidth + near_ex_min_X, -nearHalfHeight + near_ex_min_Y, m_nearPlane);
             //1
@@ -132,6 +135,8 @@
 
             m_vertices.Clear();
             m_triangles.Clear();
+
+            //4. Generate actual mesh
 
             // Watertight mesh
             if (!splitVertices) {
