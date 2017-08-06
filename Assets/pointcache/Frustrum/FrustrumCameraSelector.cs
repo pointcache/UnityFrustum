@@ -3,11 +3,52 @@
     using System.Collections;
     using System.Collections.Generic;
     using UnityEngine;
+    using UnityEngine.EventSystems;
 
     public class FrustrumCameraSelector : FrustrumCamera {
 
+        public float MinimalDragDistance = 10f;
+        public Vector2 DragStartPoint { get { return m_initialScreenClick; } }
+        public Vector2 mp;
+        /// <summary>
+        /// When the dragging actually begins, not from the moment you click, but from the moment the extents you drag
+        /// grow larger than the minimal drag distance and the frustrum activates.
+        /// 
+        /// </summary>
+        public System.Action OnStartDrag = delegate { };
+
+        /// <summary>
+        /// When you release the mouse.
+        /// </summary>
+        public System.Action OnEndDrag = delegate { };
+
+        /// <summary>
+        /// While you are dragging.
+        /// </summary>
+        public System.Action OnDrag = delegate { };
+
         public System.Action<Collider> OnSelected = delegate { };
         public System.Action<Collider> OnDeselected = delegate { };
+
+        public Vector2 SelectionFrameAnchorsMin
+        {
+            get {
+                Vector2 val = m_sortedExtents[0];
+                val.x = val.x / Screen.width;
+                val.y = val.y / Screen.height;
+                return val;
+            }
+        }
+
+        public Vector2 SelectionFrameAnchorsMax
+        {
+            get {
+                Vector2 val = m_sortedExtents[1];
+                val.x = val.x / Screen.width;
+                val.y = val.y / Screen.height;
+                return val;
+            }
+        }
 
         private HashSet<Collider> m_currentSelection_hash = new HashSet<Collider>();
         private HashSet<Collider> m_currentStay_hash = new HashSet<Collider>();
@@ -17,6 +58,7 @@
         public List<Collider> CurrentSelection { get { return m_currentSelection; } }
 
         private bool m_dragging;
+        private bool m_draggingInValidZone;
         private Vector2 m_initialScreenClick;
         private Vector2[] m_sortedExtents = new Vector2[2];
 
@@ -33,31 +75,52 @@
         protected override void Update() {
 
             base.Update();
+            if (!m_dragging && EventSystem.current != null && EventSystem.current.IsPointerOverGameObject()) {
+                return;
+            }
 
             if (!m_dragging) {
                 if (Input.GetKeyDown(KeyCode.Mouse0)) {
                     m_dragging = true;
                     m_initialScreenClick = Input.mousePosition;
-                    m_config.Active = true;
                 }
             }
             if (m_dragging) {
-                SortExtents(ConvertScreenPosToExtents(m_initialScreenClick), ConvertScreenPosToExtents(Input.mousePosition));
+                if ((m_initialScreenClick - (Vector2)Input.mousePosition).sqrMagnitude > MinimalDragDistance) {
+                    if (!m_draggingInValidZone) {
+                        m_draggingInValidZone = true;
+                        OnStartDrag();
+                    }
+                    m_config.Active = true;
 
-                frustrumConfig.ExtentsMin = m_sortedExtents[0];
-                frustrumConfig.ExtentsMax = m_sortedExtents[1];
+                    SortExtents(m_initialScreenClick, Input.mousePosition);
 
+                    frustrumConfig.ExtentsMin = ConvertScreenPosToExtents(m_sortedExtents[0]);
+                    frustrumConfig.ExtentsMax = ConvertScreenPosToExtents(m_sortedExtents[1]);
+
+                    OnDrag();
+                }
+                else {
+                    m_config.Active = false;
+                    if (m_draggingInValidZone) {
+                        m_draggingInValidZone = false;
+                        OnEndDrag();
+                    }
+                }
                 if (Input.GetKeyUp(KeyCode.Mouse0)) {
                     m_dragging = false;
+                    m_draggingInValidZone = false;
                     frustrumConfig.ExtentsMin = Vector3.zero;
                     frustrumConfig.ExtentsMax = Vector3.one;
                     m_config.Active = false;
-
+                    OnEndDrag();
                 }
             }
         }
 
         private void FixedUpdate() {
+            if (!m_config.Active)
+                return;
             for (int i = m_currentSelection.Count - 1; i > -1; i--) {
                 if (!m_currentStay_hash.Contains(m_currentSelection[i])) {
                     OnDeselected(m_currentSelection[i]);
@@ -87,7 +150,7 @@
             return pos;
 
         }
-        
+
         private void OnTriggerStay(Collider other) {
             m_currentStay_hash.Add(other);
 

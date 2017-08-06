@@ -426,9 +426,11 @@
             m_mesh.Clear();
             m_mesh.SetVertices(m_vertices);
             m_mesh.SetTriangles(m_trianglesArray, 0);
-            //m_mesh.RecalculateBounds();
-            //m_mesh.RecalculateNormals();
 
+            if (splitVertices) {
+                m_mesh.RecalculateBounds();
+                m_mesh.RecalculateNormals();
+            }
         }
 
         float Remap(float value, float from1, float to1, float from2, float to2) {
