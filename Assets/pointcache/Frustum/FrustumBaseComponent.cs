@@ -1,37 +1,37 @@
-﻿namespace pointcache.Frustrum {
+﻿namespace pointcache.Frustum {
 
     using System.Collections;
     using System.Collections.Generic;
     using UnityEngine;
 
-    public class FrustrumBaseComponent : MonoBehaviour {
+    public class FrustumBaseComponent : MonoBehaviour {
 
         public bool DoGenerate;
         public bool RealtimeUpdate;
-        public FrustrumBaseComponent TakeParametersFrom;
+        public FrustumBaseComponent TakeParametersFrom;
 
         [SerializeField]
-        protected FrustrumConfiguration frustrumConfig = new FrustrumConfiguration();
+        protected FrustumConfiguration frustumConfig = new FrustumConfiguration();
 
-        protected Frustrum frustrum;
-        protected FrustrumConfiguration m_config
+        protected Frustum frustum;
+        protected FrustumConfiguration m_config
         {
             get {
-                FrustrumConfiguration value = null;
+                FrustumConfiguration value = null;
                 if (TakeParametersFrom != null) {
-                    if (TakeParametersFrom.frustrumConfig != null)
-                        value = TakeParametersFrom.frustrumConfig;
+                    if (TakeParametersFrom.frustumConfig != null)
+                        value = TakeParametersFrom.frustumConfig;
                     else
-                        value = frustrumConfig;
+                        value = frustumConfig;
                 }
                 else
-                    value = frustrumConfig;
+                    value = frustumConfig;
                 return value;
             }
         }
 
         [System.Serializable]
-        public class FrustrumConfiguration {
+        public class FrustumConfiguration {
 
             public bool Active = true;
 
@@ -53,14 +53,14 @@
 
         protected virtual void Awake() {
 
-            frustrum = new Frustrum(
+            frustum = new Frustum(
                                 m_config.VerticalFov,
                                 m_config.HorizontalFov,
                                 m_config.NearPlaneDistance,
                                 m_config.FarPlaneDistance,
                                 m_config.SplitMeshVerts);
 
-            frustrum.SetMinimals(m_config.MinimalHorizontalFov, m_config.MinimalVerticalFov, m_config.MinimalExtentsDimension);
+            frustum.SetMinimals(m_config.MinimalHorizontalFov, m_config.MinimalVerticalFov, m_config.MinimalExtentsDimension);
 
         }
 
@@ -80,24 +80,24 @@
 
         protected virtual void Generate() {
 
-            frustrum.SetParameters(
+            frustum.SetParameters(
                     m_config.VerticalFov,
                     m_config.HorizontalFov,
                     m_config.NearPlaneDistance,
                     m_config.FarPlaneDistance);
 
-            frustrum.SetGenerationOptions(
+            frustum.SetGenerationOptions(
                 m_config.GenNear,
                 m_config.GenFar,
                 m_config.GenSides);
 
             if (m_config.UseExtents)
-                frustrum.GeneratePartial(
+                frustum.GeneratePartial(
                     m_config.SplitMeshVerts,
                     m_config.ExtentsMin,
                     m_config.ExtentsMax);
             else
-                frustrum.GenerateFull(m_config.SplitMeshVerts);
+                frustum.GenerateFull(m_config.SplitMeshVerts);
         }
     }
 }

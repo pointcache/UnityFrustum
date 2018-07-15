@@ -1,4 +1,4 @@
-﻿namespace pointcache.Frustrum {
+﻿namespace pointcache.Frustum {
 
     using System.Collections;
     using System.Collections.Generic;
@@ -6,7 +6,7 @@
 
     [RequireComponent(typeof(MeshRenderer))]
     [RequireComponent(typeof(MeshFilter))]
-    public class FrustrumMeshRenderer : FrustrumBaseComponent {
+    public class FrustumMeshRenderer : FrustumBaseComponent {
 
         private new MeshRenderer renderer;
         private MeshFilter filter;
@@ -17,7 +17,7 @@
 
             renderer = GetComponent<MeshRenderer>();
             filter = GetComponent<MeshFilter>();
-            filter.mesh = frustrum.FrustrumMesh;
+            filter.mesh = frustum.FrustumMesh;
 
         }
 

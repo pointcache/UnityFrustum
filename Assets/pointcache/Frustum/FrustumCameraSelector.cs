@@ -1,11 +1,11 @@
-﻿namespace pointcache.Frustrum {
+﻿namespace pointcache.Frustum {
 
     using System.Collections;
     using System.Collections.Generic;
     using UnityEngine;
     using UnityEngine.EventSystems;
 
-    public class FrustrumCameraSelector : FrustrumCamera {
+    public class FrustumCameraSelector : FrustumCamera {
 
         public float MinimalDragDistance = 10f;
         public Vector2 DragStartPoint { get { return m_initialScreenClick; } }
@@ -95,8 +95,8 @@
 
                     SortExtents(m_initialScreenClick, Input.mousePosition);
 
-                    frustrumConfig.ExtentsMin = ConvertScreenPosToExtents(m_sortedExtents[0]);
-                    frustrumConfig.ExtentsMax = ConvertScreenPosToExtents(m_sortedExtents[1]);
+                    frustumConfig.ExtentsMin = ConvertScreenPosToExtents(m_sortedExtents[0]);
+                    frustumConfig.ExtentsMax = ConvertScreenPosToExtents(m_sortedExtents[1]);
 
                     OnDrag();
                 }
@@ -110,8 +110,8 @@
                 if (Input.GetKeyUp(KeyCode.Mouse0)) {
                     m_dragging = false;
                     m_draggingInValidZone = false;
-                    frustrumConfig.ExtentsMin = Vector3.zero;
-                    frustrumConfig.ExtentsMax = Vector3.one;
+                    frustumConfig.ExtentsMin = Vector3.zero;
+                    frustumConfig.ExtentsMax = Vector3.one;
                     m_config.Active = false;
                     OnEndDrag();
                 }

@@ -1,4 +1,4 @@
-﻿namespace pointcache.Frustrum {
+﻿namespace pointcache.Frustum {
 
     using System.Collections;
     using System.Collections.Generic;
@@ -6,7 +6,7 @@
 
 
 
-    public class FrustrumCamera : FrustrumBaseComponent {
+    public class FrustumCamera : FrustumBaseComponent {
 
         public Camera targetCamera;
 
@@ -21,15 +21,15 @@
             if (!targetCamera)
                 return;
 
-            float vfov = frustrumConfig.VerticalFov = targetCamera.fieldOfView;
+            float vfov = frustumConfig.VerticalFov = targetCamera.fieldOfView;
 
             var radAngle = targetCamera.fieldOfView * Mathf.Deg2Rad;
             var radHFOV = 2 * Mathf.Atan(Mathf.Tan(radAngle / 2) * targetCamera.aspect);
             var hfov = Mathf.Rad2Deg * radHFOV;
 
-            frustrumConfig.HorizontalFov = hfov;
-            frustrumConfig.NearPlaneDistance = targetCamera.nearClipPlane;
-            frustrumConfig.FarPlaneDistance = targetCamera.farClipPlane;
+            frustumConfig.HorizontalFov = hfov;
+            frustumConfig.NearPlaneDistance = targetCamera.nearClipPlane;
+            frustumConfig.FarPlaneDistance = targetCamera.farClipPlane;
 
         }
 

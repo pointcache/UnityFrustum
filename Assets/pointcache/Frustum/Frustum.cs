@@ -1,4 +1,4 @@
-﻿namespace pointcache.Frustrum {
+﻿namespace pointcache.Frustum {
 
     using UnityEngine;
     using System;
@@ -15,7 +15,7 @@
     /// 
     /// </summary>
     [System.Serializable]
-    public class Frustrum {
+    public class Frustum {
 
         public float CurrentNearPlaneWidth { get; private set; }
         public float CurrentNearPlaneHeight { get; private set; }
@@ -53,9 +53,9 @@
         private List<int> m_triangles = new List<int>();
         private int[] m_trianglesArray;
 
-        public Mesh FrustrumMesh { get { return m_mesh; } }
+        public Mesh FrustumMesh { get { return m_mesh; } }
 
-        public Frustrum(float vertFov, float horFov, float nearPlane, float farPlane, bool splitVerts) {
+        public Frustum(float vertFov, float horFov, float nearPlane, float farPlane, bool splitVerts) {
 
             m_mesh = new Mesh();
             m_mesh.MarkDynamic();

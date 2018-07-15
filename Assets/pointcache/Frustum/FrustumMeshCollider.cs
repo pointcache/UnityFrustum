@@ -1,11 +1,11 @@
-﻿namespace pointcache.Frustrum {
+﻿namespace pointcache.Frustum {
 
     using System.Collections;
     using System.Collections.Generic;
     using UnityEngine;
 
     [RequireComponent(typeof(MeshCollider))]
-    public class FrustrumMeshCollider : FrustrumBaseComponent {
+    public class FrustumMeshCollider : FrustumBaseComponent {
 
         public bool Convex;
         protected new MeshCollider collider;
@@ -19,7 +19,7 @@
             base.Awake();
 
             collider = GetComponent<MeshCollider>();
-            collider.sharedMesh = frustrum.FrustrumMesh;
+            collider.sharedMesh = frustum.FrustumMesh;
             
         }
 
@@ -36,7 +36,7 @@
                     collider.enabled = true;
             }
 
-            collider.sharedMesh = frustrum.FrustrumMesh;
+            collider.sharedMesh = frustum.FrustumMesh;
             collider.convex = Convex;
         }
     }
