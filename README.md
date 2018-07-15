@@ -1,8 +1,8 @@
-# UnityFrustrum
+# UnityFrustum
 
 ![](https://kek.gg/i/4tnVqZ.gif)
 ![](https://kek.gg/i/XnPTz.gif)
-This little library implements frustrum in a form of a mesh.
+This little library implements frustum in a form of a mesh.
 It consists of a mesh generator, and components that use it.
 
 # Why this
@@ -16,21 +16,21 @@ This solution simply uses collider which is the most basic generic way without a
 Example usage:
 
 * Create visible unit field of view
-* Create actual field of view collider using FrustrumCollider
-* Use frustrum collider + FrustrumCameraSelector to select objects in the world by dragging on the screen 
+* Create actual field of view collider using FrustumCollider
+* Use frustum collider + FrustumCameraSelector to select objects in the world by dragging on the screen 
 the selection box (the original requirement of this lib)
 * Other uses.
 
 # Usage
 
-The frustrum is defined by several parameters:
+The frustum is defined by several parameters:
 
 * Vertical FOV
 * Horizontal FOV
 * Near plane distance
 * Far plane distance
 
-Additionally you shrink the current frustrum in its area using
+Additionally you shrink the current frustum in its area using
 * Extent min (from lower left corner, a 0-1 float value)
 * Extent max 
 
@@ -38,12 +38,12 @@ Additionally you shrink the current frustrum in its area using
 
 # Using selection system
 
-Selection system consists of a FrustrumCollider and FrustrumCameraSelector working in tandem.
+Selection system consists of a FrustumCollider and FrustumCameraSelector working in tandem.
 Instructions:
-  1. Attach FrustrumCameraSelector to camera
+  1. Attach FrustumCameraSelector to camera
   2. It will auto setup the parameters in `Reset()`
-  3. Add FrustrumMeshCollider to that camera so it can receive physics events.
-  4. Drag FrustrumCameraSelector into `TakeParametersFrom` field of FrustrumMeshCollider, 
+  3. Add FrustumMeshCollider to that camera so it can receive physics events.
+  4. Drag FrustumCameraSelector into `TakeParametersFrom` field of FrustumMeshCollider, 
   this will make it sample the mesh generator settings from it.
   5. Make both UpdateInRealtime.
   6. Any object you wish to be able to select must have a rigidbody (kinematic will do)
